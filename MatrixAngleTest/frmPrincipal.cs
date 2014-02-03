@@ -24,6 +24,9 @@ namespace MatrixAngleTest
         Graphics pictureboxContext;
         Bitmap backbuffer;
         private int _numleds;
+        private double cx = -1;
+        private double cy = -1;
+        private bool _binarize = true;
 
         public frmPrincipal()
         {
@@ -34,8 +37,8 @@ namespace MatrixAngleTest
         private void frmPrincipal_Load(object sender, EventArgs e)
         {
             //pictureBox1.Image = Resources.bike_wheel;
-            _imageWidth = Resources.bike_wheel.Width;
-            _imageHeight = Resources.bike_wheel.Height;
+            //_imageWidth = Resources.bike_wheel.Width;
+            //_imageHeight = Resources.bike_wheel.Height;
 
 
             backbuffer = new Bitmap(pictureBox1.Width, pictureBox1.Height);
@@ -134,7 +137,16 @@ namespace MatrixAngleTest
             if (_imagePath != null)
             {
                 Bitmap img = new Bitmap(_imagePath);
+               
                 img = (Bitmap)ResizeImage(img);
+
+                if (_binarize)
+                {
+                    img = BradleyAdaptiveThresholding.Process(img);
+                }
+
+                _imageWidth = img.Width;
+                _imageHeight = img.Height;
                 pictureBox2.Image = img;
 
                 
@@ -199,8 +211,11 @@ namespace MatrixAngleTest
             try
             {
                 float pci = percentCenterIgnore / 100f;
-                double cx = img.Width / 2;
-                double cy = img.Height / 2;
+                if (cx < 0)
+                {
+                    cx = img.Width / 2;
+                    cy = img.Height / 2;
+                }
                 int minSize = Math.Min(img.Width, img.Height);
                 int start = (int)(pci * (float)minSize);
 
@@ -274,8 +289,9 @@ namespace MatrixAngleTest
                 int start = (int)(pci * (float)minSize);
 
                 int separacion = 5;
-                double cx = _imageWidth / 2;
-                double cy = _imageHeight / 2;
+                double cx = pictureBox1.Width / 2;
+                double cy = pictureBox1.Height / 2;
+                
                 int leds = (int)(_numleds / numTiras.Value);
                 float angleOffset = (float)360 / (int)numRadios.Value;
                 float tiraOffset = (float)360 / (float)numTiras.Value;
@@ -392,5 +408,21 @@ namespace MatrixAngleTest
             _wheelTimer.Interval = trackBar1.Value;
         }
 
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            double fx = (double)_imageWidth / pictureBox2.Width;
+            double fy = (double)_imageHeight / pictureBox2.Height;
+            cx = e.X * fx;
+            cy = e.Y * fy;
+            ReloadImage();
+        }
+
+
+        
     }
 }
