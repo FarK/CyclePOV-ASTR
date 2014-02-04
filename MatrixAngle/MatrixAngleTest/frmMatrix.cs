@@ -21,6 +21,11 @@ namespace MatrixAngleTest
             _matrix = matrix;
             _leds = leds;
             _numRadios = numRadios;
+
+            //Rellenamos la lista de puertos
+            foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
+                portsListCB.Items.Add(port);
+
         }
 
         private void frmMatrix_Load(object sender, EventArgs e)
@@ -60,5 +65,32 @@ namespace MatrixAngleTest
             textBox1.Text = str;
 
         }
+
+        private void sendBT_Click(object sender, EventArgs e)
+        {
+            //Configure and open serial port
+            if (serialPort.IsOpen) serialPort.Close();
+            serialPort.PortName = (string)portsListCB.SelectedItem;
+            serialPort.BaudRate = 4800;
+            serialPort.Open();
+
+            byte[] buff = {0};
+
+            for (int i = 0; i < _matrix.GetLength(0); i++)
+                for (int j = 0; j < _matrix.GetLength(1); j++)
+                    for (int k = 0; k < _matrix.GetLength(2); k++){
+                        buff[0] = (byte)_matrix[i,j,k];
+                        serialPort.Write(buff, 0, 1);
+                    }
+        }
+
+        private void updateCB(object sender, EventArgs e)
+        {
+            //Rellenamos la lista de puertos
+            portsListCB.Items.Clear();
+            foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
+                portsListCB.Items.Add(port);
+        }
+
     }
 }
