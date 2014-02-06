@@ -142,10 +142,6 @@ void BSP_Leds_SetBuffer(CPU_INT32U num_spoke)
 
 void BSP_Leds_DMAEnable()
 {
-	SPI_Cmd(SPI2, DISABLE);
-	DMA_Cmd(DMA1_Stream4, DISABLE);
-	DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4);
-
 	DMA_MemoryTargetConfig(DMA1_Stream4, (uint32_t)&ledBuffer, DMA_Memory_0);
 	DMA_SetCurrDataCounter(DMA1_Stream4, LED_BUFFER_SIZE);
 
@@ -160,6 +156,7 @@ void BSP_Leds_DMADisable()
 {
 	SPI_Cmd(SPI2, DISABLE);
 	DMA_Cmd(DMA1_Stream4, DISABLE);
+	DMA_ITConfig(DMA1_Stream4, DMA_IT_TC, DISABLE);
 	DMA_ClearITPendingBit(DMA1_Stream4, DMA_IT_TCIF4);
 }
 
