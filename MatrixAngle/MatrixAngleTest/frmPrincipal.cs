@@ -26,7 +26,8 @@ namespace MatrixAngleTest
         private int _numleds;
         private double cx = -1;
         private double cy = -1;
-        private bool _binarize = true;
+        private bool _binarize = false;
+        private bool _interpolated = true;
 
         public frmPrincipal()
         {
@@ -50,8 +51,11 @@ namespace MatrixAngleTest
             _wheelTimer.Tick += new EventHandler(_wheelTimer_Tick);
             _wheelTimer.Enabled = true;
 
-            _numleds = (int)numLeds.Value * (int)numTiras.Value;
+            _numleds = (int)numLeds.Value;
 
+            //inicio
+            _imagePath = "C:\\Users\\David\\Pictures\\2048px-User_Jette_awesome.svg.png";
+            ReloadImage();
         }
 
         void _wheelTimer_Tick(object sender, EventArgs e)
@@ -76,8 +80,10 @@ namespace MatrixAngleTest
         /// negative values will rotate counter-clockwise
         /// </param>
         /// <returns></returns>
-        public static Image RotateImage(Image img, float rotationAngle)
+        public Image RotateImage(Image img, float rotationAngle)
         {
+
+
             //create an empty Bitmap image
             Bitmap bmp = new Bitmap(img.Width, img.Height);
 
@@ -107,6 +113,7 @@ namespace MatrixAngleTest
 
             bmp.Save("images/wheel" + rotationAngle.ToString() + ".png");
 
+            
 
 
             //return the image
@@ -123,13 +130,44 @@ namespace MatrixAngleTest
                 try
                 {
                     _imagePath = openFileDialog1.FileName;
-                    ReloadImage();
+                    OpenImage();
                 }
                 catch(Exception ex )
                 {
                 }
             }
 
+        }
+
+        private void OpenImage()
+        {
+            if (_imagePath != null)
+            {
+                Bitmap img = new Bitmap(_imagePath);
+
+                img = (Bitmap)ResizeImage(img);
+
+                if (_binarize)
+                {
+                    img = BradleyAdaptiveThresholding.Process(img);
+                }
+
+                imageList1.Images.Add(img);
+                ListViewItem lvi = new ListViewItem();
+                lvi.ImageIndex = imageList1.Images.Count - 1;
+                lvi.Tag = _imagePath;
+                listView1.Items.Add(lvi);
+
+
+
+                _imageWidth = img.Width;
+                _imageHeight = img.Height;
+                pictureBox2.Image = img;
+
+
+                _matrix = GetMatrix(img, 1, (int)numRadios.Value,
+                                   _numleds, (int)pixelsDistance.Value, (int)this.ignorarCentro.Value);
+            }
         }
 
         private void ReloadImage()
@@ -144,13 +182,14 @@ namespace MatrixAngleTest
                 {
                     img = BradleyAdaptiveThresholding.Process(img);
                 }
+                
 
                 _imageWidth = img.Width;
                 _imageHeight = img.Height;
                 pictureBox2.Image = img;
 
                 
-                _matrix = GetMatrix(img, (int)numTiras.Value, (int)numRadios.Value,
+                _matrix = GetMatrix(img, 1, (int)numRadios.Value,
                                    _numleds, (int)pixelsDistance.Value, (int)this.ignorarCentro.Value);
             }
         }
@@ -219,8 +258,7 @@ namespace MatrixAngleTest
                 int minSize = Math.Min(img.Width, img.Height);
                 int start = (int)(pci * (float)minSize);
 
-                int ledsxtira = numLeds / numTiras;
-
+                int ledsxradio = numLeds;
                 float grade = 0;
                 float radiooffset = (float)360 / numRadios;
                 float tiraoffset = (float)numRadios / numTiras;
@@ -234,33 +272,23 @@ namespace MatrixAngleTest
                         r = (int)(radio + (tiraoffset * i));
                         grade = (r * radiooffset);
 
-                        for (int l = 0; l < ledsxtira; l++)
+                        for (int l = 0; l < ledsxradio; l++)
                         {
-                            int red = 0;
-                            int green = 0;
-                            int blue = 0;
+                            int p = start + l * ledsOffset;
+                            double x = p * Math.Cos(DegreeToRadian(grade)) + cx;
+                            double y = p * -Math.Sin(DegreeToRadian(grade)) + cy;
+                            x = Math.Round(x);
+                            y = Math.Round(y);
 
-                            //interpolacion
-                            for (int j = -ledsOffset/2 + 1; j <= ledsOffset/2; j++)
-                            {
-                                int p = start + l * ledsOffset + j;
-                                double x = p * Math.Sin(DegreeToRadian(grade)) + cx;
-                                double y = p * Math.Cos(DegreeToRadian(grade)) + cy;
+                            int red;
+                            int green;
+                            int blue;
+                            GetInterpolationColor(img, x, y, out red, out green, out blue);
 
-                                if (x > 0 && x < img.Width && y < img.Height && y > 0)
-                                {
-                                    Color c = ((Bitmap)img).GetPixel((int)x, (int)y);
-
-                                    red += c.R;
-                                    green += c.G;
-                                    blue += c.B;
-                                }
-                            }
-
-                            int index = l + (ledsxtira * i);
-                            m[radio, index, 0] = red / ledsOffset;
-                            m[radio, index, 1] = green / ledsOffset;
-                            m[radio, index, 2] = blue / ledsOffset;
+                            int index = l + (ledsxradio * i);
+                            m[radio, index, 0] = red;
+                            m[radio, index, 1] = green;
+                            m[radio, index, 2] = blue;
                         }
                     }
 
@@ -272,6 +300,55 @@ namespace MatrixAngleTest
             }
 
             return m;
+        }
+
+        private static void GetInterpolationColor(Image img, double x, double y, out int red, out int green, out int blue)
+        {
+
+            float[,] cm = new float[,] 
+                        { 
+                            {0, 1, 1, 1, 0},
+                            {1, 2, 4, 3, 1},
+                            {2, 4, 5, 4, 2},
+                            {1, 2, 4, 3, 1},
+                            {0, 1, 1, 1, 0}
+                        };
+
+            float sum = 0;
+            int i = 0, j = 0;
+            for (i = 0; i < 5; i++)
+                for (j = 0; j < 5; j++)
+                    sum += cm[i, j];
+
+
+            int count = 0;
+            red = 0; green = 0; blue = 0;
+            x -= 2; y -= 2;
+            i = -2; 
+            for (; i < 3; i++)
+            {
+                j = -2;
+                for (; j < 3; j++)
+                {
+                    if (x + i >= 0 && x + i < img.Width &&
+                        y + j >= 0 && y + j < img.Height)
+                    {
+                        Color c = ((Bitmap)img).GetPixel((int)x + i, (int)y + j);
+
+                        float f = ((float)cm[i+2, j+2] / sum);
+                        red += (int)((float)c.R * f);
+                        green += (int)((float)c.G * f);
+                        blue += (int)((float)c.B * f);
+
+                    }
+                }
+
+            }
+            if (red == 0 && green == 0 && blue == 0)
+                red = red;
+
+
+
         }
 
         private double DegreeToRadian(double angle)
@@ -292,30 +369,30 @@ namespace MatrixAngleTest
                 double cx = pictureBox1.Width / 2;
                 double cy = pictureBox1.Height / 2;
                 
-                int leds = (int)(_numleds / numTiras.Value);
+                int leds = (int)(_numleds);
                 float angleOffset = (float)360 / (int)numRadios.Value;
-                float tiraOffset = (float)360 / (float)numTiras.Value;
-                float ledsxtira = (float)_numleds / (float)numTiras.Value;
+                float ledxradio = (float)_numleds;
                 int l = 0;
-                int tiras = (int)numTiras.Value;
+                int radio = 0;
 
-                float firstangle = angleOffset * radio;
-                for( int i = 0; i < numTiras.Value; i++)
+                float firstangle = angleOffset * this.radio;
+                float radios90grades = (int)numRadios.Value / 4;
+
+                for( int i = 0; i < 4; i++)
                 {
-                    float angle = (firstangle + (tiraOffset * (float)i));
+                    float angle = (firstangle + (angleOffset * 3* radios90grades * i));
+                    radio = (int)(this.radio + (3* radios90grades * i)) % (int)numRadios.Value;
 
-                    int startled = (int)(ledsxtira * i);
 
-                    for (int j = 0; j < (int)ledsxtira; j++)
+                    for (int j = 0; j < (int)ledxradio; j++)
                     {
-                        if ( (j+i) % tiras == 0)
+                        if ( (j+i) % 2 == 0)
                         {
-                            l = startled + j;
-                            double x = separacion * j * Math.Sin(DegreeToRadian(angle)) + cx;
-                            double y = separacion * j * Math.Cos(DegreeToRadian(angle)) + cy;
-                            double startx = start * Math.Sin(DegreeToRadian(angle));
-                            double starty = start * Math.Cos(DegreeToRadian(angle));
-
+                            l = j;
+                            double x = separacion * j * Math.Cos(DegreeToRadian(angle)) + cx;
+                            double y = separacion * j * -Math.Sin(DegreeToRadian(angle)) + cy;
+                            double startx = start * Math.Cos(DegreeToRadian(angle));
+                            double starty = start * -Math.Sin(DegreeToRadian(angle));
 
                             int red = _matrix[(int)radio, l, 0];
                             int green = _matrix[(int)radio, l, 1];
@@ -346,14 +423,14 @@ namespace MatrixAngleTest
 
         private void numLeds_ValueChanged(object sender, EventArgs e)
         {
-            _numleds = (int)numLeds.Value * (int)numTiras.Value;
+            _numleds = (int)numLeds.Value * (int)1;
             backbufferContext.Clear(Color.White);
             ReloadImage();
         }
 
         private void numTiras_ValueChanged(object sender, EventArgs e)
         {
-            _numleds = (int)numLeds.Value * (int)numTiras.Value;
+            _numleds = (int)numLeds.Value * (int)1;
             backbufferContext.Clear(Color.White);
             ReloadImage();
         }
@@ -367,43 +444,106 @@ namespace MatrixAngleTest
         private void matrizToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int[, ,] matrix = ReduceMatrix(_matrix);
-            frmMatrix frmM = new frmMatrix(matrix, (int)_numleds / 2, (int)numRadios.Value);
+            frmMatrix frmM = new frmMatrix(matrix, (int)_numleds, (int)numRadios.Value);
             frmM.ShowDialog();
         }
 
         private int[, ,] ReduceMatrix(int[, ,] _matrix)
         {
             int numradios = (int)numRadios.Value;
-            int totalleds = (int)numLeds.Value *  2;
-            int tiras = (int)numTiras.Value;
-            int ledsxtira = totalleds / tiras;
-            int[, ,] m = new int[numradios, totalleds / 2, 3];
+            int totalleds = (int)numLeds.Value;
+            int ledsxtira = totalleds;
+            int[, ,] m = new int[numradios, totalleds, 3];
+            int rsource = 0;
 
-            for (int r = 0; r < numradios; r++)
+            if (_matrix != null)
             {
-                int numTira = 0;
-                int ledindex = 0;
-                for (int l = 0; l < totalleds; l++ )
-                {
-                    if (l != 0 && l % ledsxtira == 0)
-                        numTira++;
+                float pci = (int)ignorarCentro.Value / 100f;
+                int minSize = Math.Min(_imageWidth, _imageHeight);
+                int start = (int)(pci * (float)minSize);
 
-                    int led = l % ledsxtira;
-                    if ((led + numTira) % tiras == 0)
+                int separacion = 5;
+                double cx = pictureBox1.Width / 2;
+                double cy = pictureBox1.Height / 2;
+
+                int leds = (int)(_numleds);
+                float angleOffset = (float)360 / (int)numRadios.Value;
+                float ledxradio = (float)_numleds;
+                int l = 0;
+                int radio = 0;
+
+                for (int r = 0; r < numradios; r++)
+                {
+                    float firstangle = angleOffset * r;
+                    float radios90grades = (int)numRadios.Value / 4;
+                    l = 0;
+
+                    for (int i = 0; i < 2; i++)
                     {
-                        m[r, ledindex,0] = _matrix[r, l,0];
-                        m[r, ledindex, 1] = _matrix[r, l, 1];
-                        m[r, ledindex++, 2] = _matrix[r, l, 2];
-                    }
+                        
+                        float angle = (firstangle + (angleOffset * 3 * radios90grades * i));
+                        radio = (int)(r + (3 * radios90grades * i)) % (int)numRadios.Value;
+
+                        for (int j = 0; j < (int)ledxradio; j++)
+                        {
+                            if ((j + i) % 2 == 0)
+                            {
                    
+                                double x = separacion * j * Math.Cos(DegreeToRadian(angle)) + cx;
+                                double y = separacion * j * -Math.Sin(DegreeToRadian(angle)) + cy;
+                                double startx = start * Math.Cos(DegreeToRadian(angle));
+                                double starty = start * -Math.Sin(DegreeToRadian(angle));
+
+                                int red = _matrix[(int)radio, j, 0];
+                                int green = _matrix[(int)radio, j, 1];
+                                int blue = _matrix[(int)radio, j, 2];
+
+                                m[r, l, 0] = red;
+                                m[r, l, 1] = green;
+                                m[r, l++, 2] = blue;
+                            }
+                        }
+                    }
+
                 }
+
             }
+            //for (int r = 0; r < numradios; r++)
+            //{
+            //    int numTira = 0;
+            //    int ledindex = 0;
+            //    rsource = r;
+            //    for (int l = 0; l < totalleds; l++ )
+            //    {
+            //        if (l != 0 && l % ledsxtira == 0)
+            //        {
+            //            numTira++;
+            //            rsource -= (numradios / 4) - 1;
+            //            if (rsource < 0)
+            //            {
+            //                rsource = numradios - rsource;
+            //            }
+            //            rsource %= (numradios - 1);
+
+            //        }
+
+            //        int led = l % ledsxtira;
+            //        if ((led + numTira) % 2 == 0)
+            //        {
+            //            m[r, ledindex,0] = _matrix[rsource, l,0];
+            //            m[r, ledindex, 1] = _matrix[rsource, l, 1];
+            //            m[r, ledindex++, 2] = _matrix[rsource, l, 2];
+            //        }
+                   
+            //    }
+            //}
 
             return m;
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
+            radio = 0;
             backbufferContext.Clear(Color.White);
             _wheelTimer.Interval = trackBar1.Value;
         }
@@ -420,6 +560,16 @@ namespace MatrixAngleTest
             cx = e.X * fx;
             cy = e.Y * fy;
             ReloadImage();
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                _imagePath = (string)item.Tag;
+                ReloadImage();
+                break;
+            }
         }
 
 
