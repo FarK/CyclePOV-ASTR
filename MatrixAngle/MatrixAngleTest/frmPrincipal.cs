@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using MatrixAngleTest.Properties;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace MatrixAngleTest
 {
@@ -55,7 +56,7 @@ namespace MatrixAngleTest
 
             //inicio
             _imagePath = "C:\\Users\\David\\Pictures\\2048px-User_Jette_awesome.svg.png";
-            ReloadImage();
+            LoadImageList();
         }
 
         void _wheelTimer_Tick(object sender, EventArgs e)
@@ -113,9 +114,6 @@ namespace MatrixAngleTest
 
             bmp.Save("images/wheel" + rotationAngle.ToString() + ".png");
 
-            
-
-
             //return the image
             return bmp;
         }
@@ -143,20 +141,12 @@ namespace MatrixAngleTest
         {
             if (_imagePath != null)
             {
-                Bitmap img = new Bitmap(_imagePath);
+                Bitmap img = GetImage();
 
-                img = (Bitmap)ResizeImage(img);
+                Add2ImageList(img);
 
-                if (_binarize)
-                {
-                    img = BradleyAdaptiveThresholding.Process(img);
-                }
-
-                imageList1.Images.Add(img);
-                ListViewItem lvi = new ListViewItem();
-                lvi.ImageIndex = imageList1.Images.Count - 1;
-                lvi.Tag = _imagePath;
-                listView1.Items.Add(lvi);
+                //escribimos a ficheros la lista de imagenes
+                SaveImageList();
 
 
 
@@ -170,20 +160,61 @@ namespace MatrixAngleTest
             }
         }
 
+        private void Add2ImageList(Bitmap img)
+        {
+            imageList1.Images.Add(img);
+            ListViewItem lvi = new ListViewItem();
+            lvi.ImageIndex = imageList1.Images.Count - 1;
+            lvi.Tag = _imagePath;
+            listView1.Items.Add(lvi);
+        }
+
+        private Bitmap GetImage()
+        {
+            Bitmap img = new Bitmap(_imagePath);
+
+            img = (Bitmap)ResizeImage(img);
+
+            if (_binarize)
+            {
+                img = BradleyAdaptiveThresholding.Process(img);
+            }
+            return img;
+        }
+
+        private void SaveImageList()
+        {
+            Application.DoEvents();
+            StreamWriter sw = new StreamWriter("imagelist.txt");
+            foreach (ListViewItem lvi in listView1.Items)
+            {
+                sw.WriteLine(lvi.Tag);
+            }
+            sw.Close();
+        }
+
+        private void LoadImageList()
+        {
+            StreamReader sr = new StreamReader("imagelist.txt");
+            string line = sr.ReadLine();
+
+            while (line != null)
+            {
+                _imagePath = line;
+                Bitmap img = GetImage();
+                Add2ImageList(img);
+
+                line = sr.ReadLine();
+            }
+        }
+
+
         private void ReloadImage()
         {
             if (_imagePath != null)
             {
-                Bitmap img = new Bitmap(_imagePath);
-               
-                img = (Bitmap)ResizeImage(img);
-
-                if (_binarize)
-                {
-                    img = BradleyAdaptiveThresholding.Process(img);
-                }
+                Bitmap img = GetImage();
                 
-
                 _imageWidth = img.Width;
                 _imageHeight = img.Height;
                 pictureBox2.Image = img;
@@ -234,11 +265,6 @@ namespace MatrixAngleTest
             gfx.Dispose();
 
         
-             if (!System.IO.Directory.Exists("images"))
-                System.IO.Directory.CreateDirectory("images");
-
-             bmp.Save("images/img" + this.numLeds.Value.ToString() + ".png");
-
             //return the image
             return bmp;
         }
@@ -570,6 +596,26 @@ namespace MatrixAngleTest
                 ReloadImage();
                 break;
             }
+        }
+
+        private void listView1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                cm_Eliminar.Show(Cursor.Position);
+            }
+        }
+
+        private void eliminarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                listView1.Items.Remove(item);
+                break;
+            }
+
+            SaveImageList();
         }
 
 
