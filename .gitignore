@@ -1,3 +1,4 @@
+#Other Porjects
 IR test
 LEDstrip
 test
@@ -5,6 +6,17 @@ TimerCapture
 uCOS-III
 uCOS-III template
 
+#CoIDE
 *.cogui
 *.comarker
 CyclePOV/CyclePOV
+CyclePOV/logs
+a.out
+
+#MatrixAngle
+*.suo
+MatrixAngle/MatrixAngleTest/bin
+MatrixAngle/MatrixAngleTest/obj
+
+#Vim
+*.swp
