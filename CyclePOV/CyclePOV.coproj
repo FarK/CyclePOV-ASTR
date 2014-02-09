@@ -41,7 +41,7 @@
           <Memory name="IROM2" type="ReadOnly" size="" startValue=""/>
           <Memory name="IRAM2" type="ReadWrite" size="0x00010000" startValue="0x10000000"/>
         </MemoryAreas>
-        <LocateLinkFile path="../../../../../coocox/coide/configuration/programdata/CyclePOV/arm-gcc-link.ld" type="0"/>
+        <LocateLinkFile path="../../../../../../coocox/coide/configuration/programdata/cyclepov/arm-gcc-link.ld" type="0"/>
       </Link>
       <Output>
         <Option name="OutputFileType" value="0"/>
@@ -58,15 +58,15 @@
     <DebugOption>
       <Option name="org.coocox.codebugger.gdbjtag.core.adapter" value="ST-Link"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.debugMode" value="SWD"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.clockDiv" value="1M"/>
-      <Option name="org.coocox.codebugger.gdbjtag.corerunToMain" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.clockDiv" value="100K"/>
+      <Option name="org.coocox.codebugger.gdbjtag.corerunToMain" value="0"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.jlinkgdbserver" value=""/>
       <Option name="org.coocox.codebugger.gdbjtag.core.userDefineGDBScript" value=""/>
       <Option name="org.coocox.codebugger.gdbjtag.core.targetEndianess" value="0"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.jlinkResetMode" value="Type 0: Normal"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.resetMode" value="SYSRESETREQ"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.resetMode" value="HW RESET"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.ifSemihost" value="0"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.ifCacheRom" value="1"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.ifCacheRom" value="0"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.ipAddress" value="127.0.0.1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.portNumber" value="2009"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.autoDownload" value="1"/>
@@ -84,22 +84,26 @@
     <File name="uCOS-III/uCOS-III/include" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_tdes.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_tdes.c" type="1"/>
     <File name="app/bsp/bsp_timer.h" path="app/bsp/bsp_timer.h" type="1"/>
+    <File name="app/task/task_communication.h" path="app/task/task_communication.h" type="1"/>
     <File name="uCOS-III/uC-CPU/src/cpu_a.s" path="../uCOS-III/uC-CPU/src/cpu_a.s" type="1"/>
     <File name="uCOS-III/uC-LIB/include/lib_ascii.h" path="../uCOS-III/uC-LIB/include/lib_ascii.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_wwdg.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_wwdg.h" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rcc.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rcc.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_prio.c" path="../uCOS-III/uCOS-III/src/os_prio.c" type="1"/>
+    <File name="app/task/StateMachine/SM_frame.h" path="app/task/StateMachine/SM_frame.h" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rcc.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rcc.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis/core_cmInstr.h" path="../uCOS-III/BSP/cmsis/cmsis/core_cmInstr.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_dcmi.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_dcmi.c" type="1"/>
-    <File name="uCOS-III/uCOS-III/include/os.h" path="../uCOS-III/uCOS-III/include/os.h" type="1"/>
     <File name="app/cfg" path="" type="2"/>
+    <File name="uCOS-III/uCOS-III/include/os.h" path="../uCOS-III/uCOS-III/include/os.h" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_mem.c" path="../uCOS-III/uCOS-III/src/os_mem.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_q.c" path="../uCOS-III/uCOS-III/src/os_q.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_boot" path="" type="2"/>
     <File name="uCOS-III/uCOS-III/src/os_cpu_a.s" path="../uCOS-III/uCOS-III/src/os_cpu_a.s" type="1"/>
+    <File name="app/task/StateMachine/frame.h" path="app/task/StateMachine/frame.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_tim.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_tim.h" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III/src/bsp_int.c" path="../uCOS-III/BSP/uCOS-III/src/bsp_int.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash_md5.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash_md5.c" type="1"/>
+    <File name="app/task/task_communication.c" path="app/task/task_communication.c" type="1"/>
     <File name="app/cfg/libcfg" path="" type="2"/>
     <File name="uCOS-III/uC-LIB" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash_sha1.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash_sha1.c" type="1"/>
@@ -109,14 +113,16 @@
     <File name="uCOS-III/BSP/cmsis" path="" type="2"/>
     <File name="uCOS-III/uC-LIB/src/lib_ascii.c" path="../uCOS-III/uC-LIB/src/lib_ascii.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_gpio.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_gpio.c" type="1"/>
-    <File name="app/os_app_hooks.h" path="app/os_app_hooks.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis/core_cmFunc.h" path="../uCOS-III/BSP/cmsis/cmsis/core_cmFunc.h" type="1"/>
+    <File name="app/os_app_hooks.h" path="app/os_app_hooks.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_can.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_can.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_fsmc.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_fsmc.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_var.c" path="../uCOS-III/uCOS-III/src/os_var.c" type="1"/>
+    <File name="app/bsp/bsp_usart.c" path="app/bsp/bsp_usart.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_iwdg.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_iwdg.h" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_boot/startup/startup_stm32f4xx.c" path="../uCOS-III/BSP/cmsis/cmsis_boot/startup/startup_stm32f4xx.c" type="1"/>
+    <File name="app/includes.h" path="app/includes.h" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_stat.c" path="../uCOS-III/uCOS-III/src/os_stat.c" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_boot/startup/startup_stm32f4xx.c" path="../uCOS-III/BSP/cmsis/cmsis_boot/startup/startup_stm32f4xx.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib" path="" type="2"/>
     <File name="app/cfg/libcfg/lib_cfg.h" path="app/cfg/libcfg/lib_cfg.h" type="1"/>
     <File name="uCOS-III/uC-LIB/src/lib_mem.c" path="../uCOS-III/uC-LIB/src/lib_mem.c" type="1"/>
@@ -133,26 +139,28 @@
     <File name="uCOS-III/uCOS-III/src/os_tmr.c" path="../uCOS-III/uCOS-III/src/os_tmr.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_tick.c" path="../uCOS-III/uCOS-III/src/os_tick.c" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III/include" path="" type="2"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_hash.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_hash.h" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dac.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dac.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_pwr.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_pwr.h" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dac.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dac.h" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_hash.c" type="1"/>
     <File name="app/os_app_hooks.c" path="app/os_app_hooks.c" type="1"/>
+    <File name="app/bsp/bsp_usart.h" path="app/bsp/bsp_usart.h" type="1"/>
     <File name="uCOS-III/uC-CPU/include" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_adc.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_adc.c" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_aes.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_aes.c" type="1"/>
     <File name="uCOS-III/uC-LIB/include/lib_str.h" path="../uCOS-III/uC-LIB/include/lib_str.h" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_aes.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_aes.c" type="1"/>
     <File name="uCOS-III/uC-LIB/src/lib_math.c" path="../uCOS-III/uC-LIB/src/lib_math.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_fsmc.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_fsmc.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp.c" type="1"/>
     <File name="uCOS-III/uC-CPU/src/cpu_c.c" path="../uCOS-III/uC-CPU/src/cpu_c.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_exti.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_exti.h" type="1"/>
+    <File name="app/task/StateMachine/SM_frame.c" path="app/task/StateMachine/SM_frame.c" type="1"/>
     <File name="uCOS-III/uC-LIB/include/lib_def.h" path="../uCOS-III/uC-LIB/include/lib_def.h" type="1"/>
     <File name="app/task/tasks.c" path="app/task/tasks.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_dbgmcu.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_dbgmcu.c" type="1"/>
-    <File name="app" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis" path="" type="2"/>
+    <File name="app" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_i2c.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_i2c.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_can.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_can.h" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III" path="" type="2"/>
@@ -160,6 +168,7 @@
     <File name="uCOS-III/BSP/uCOS-III/src/bsp.c" path="../uCOS-III/BSP/uCOS-III/src/bsp.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include" path="" type="2"/>
     <File name="uCOS-III/uC-LIB/src/lib_str.c" path="../uCOS-III/uC-LIB/src/lib_str.c" type="1"/>
+    <File name="app/task/StateMachine" path="" type="2"/>
     <File name="uCOS-III/uCOS-III/src/os_time.c" path="../uCOS-III/uCOS-III/src/os_time.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_sdio.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_sdio.c" type="1"/>
     <File name="uCOS-III/uCOS-III" path="" type="2"/>
@@ -172,18 +181,18 @@
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dma.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dma.h" type="1"/>
     <File name="app/task/tasks.h" path="app/task/tasks.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_boot/stm32f4xx_conf.h" path="../uCOS-III/BSP/cmsis/cmsis_boot/stm32f4xx_conf.h" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_gpio.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_gpio.h" type="1"/>
     <File name="app/task/task_leds.h" path="app/task/task_leds.h" type="1"/>
     <File name="uCOS-III/uCOS-III/src" path="" type="2"/>
     <File name="uCOS-III/uCOS-III/src/os_int.c" path="../uCOS-III/uCOS-III/src/os_int.c" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_gpio.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_gpio.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_crc.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_crc.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dbgmcu.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_dbgmcu.h" type="1"/>
     <File name="app/bsp" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_rcc.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_rcc.h" type="1"/>
-    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_tim.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_tim.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_iwdg.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_iwdg.c" type="1"/>
-    <File name="app/task/task_leds.c" path="app/task/task_leds.c" type="1"/>
+    <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_tim.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_tim.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_i2c.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_i2c.c" type="1"/>
+    <File name="app/task/task_leds.c" path="app/task/task_leds.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_sem.c" path="../uCOS-III/uCOS-III/src/os_sem.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rng.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_rng.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_boot/startup" path="" type="2"/>
@@ -209,16 +218,16 @@
     <File name="uCOS-III/BSP/cmsis/cmsis_boot/system_stm32f4xx.h" path="../uCOS-III/BSP/cmsis/cmsis_boot/system_stm32f4xx.h" type="1"/>
     <File name="uCOS-III/uCOS-III/include/os_cpu.h" path="../uCOS-III/uCOS-III/include/os_cpu.h" type="1"/>
     <File name="app/bsp/bsp_user.c" path="app/bsp/bsp_user.c" type="1"/>
-    <File name="uCOS-III/uCOS-III/src/os_task.c" path="../uCOS-III/uCOS-III/src/os_task.c" type="1"/>
     <File name="app/main.c" path="app/main.c" type="1"/>
     <File name="uCOS-III/uC-CPU/include/cpu.h" path="../uCOS-III/uC-CPU/include/cpu.h" type="1"/>
+    <File name="uCOS-III/uCOS-III/src/os_task.c" path="../uCOS-III/uCOS-III/src/os_task.c" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III/src/bsp_os.c" path="../uCOS-III/BSP/uCOS-III/src/bsp_os.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_syscfg.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_syscfg.c" type="1"/>
     <File name="app/bsp/bsp_timer.c" path="app/bsp/bsp_timer.c" type="1"/>
     <File name="uCOS-III" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_sdio.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_sdio.h" type="1"/>
-    <File name="app/bsp/bsp_leds.c" path="app/bsp/bsp_leds.c" type="1"/>
     <File name="uCOS-III/uC-CPU/src/cpu_core.c" path="../uCOS-III/uC-CPU/src/cpu_core.c" type="1"/>
+    <File name="app/bsp/bsp_leds.c" path="app/bsp/bsp_leds.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_mutex.c" path="../uCOS-III/uCOS-III/src/os_mutex.c" type="1"/>
     <File name="app/bsp/bsp_sensor.h" path="app/bsp/bsp_sensor.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_des.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_cryp_des.c" type="1"/>
@@ -228,8 +237,8 @@
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_crc.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_crc.c" type="1"/>
     <File name="uCOS-III/uC-CPU" path="" type="2"/>
     <File name="uCOS-III/BSP/cmsis/cmsis/core_cm4.h" path="../uCOS-III/BSP/cmsis/cmsis/core_cm4.h" type="1"/>
-    <File name="uCOS-III/uC-CPU/include/cpu_core.h" path="../uCOS-III/uC-CPU/include/cpu_core.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis/core_cm4_simd.h" path="../uCOS-III/BSP/cmsis/cmsis/core_cm4_simd.h" type="1"/>
+    <File name="uCOS-III/uC-CPU/include/cpu_core.h" path="../uCOS-III/uC-CPU/include/cpu_core.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_syscfg.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_syscfg.h" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III/include/bsp.h" path="../uCOS-III/BSP/uCOS-III/include/bsp.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_rtc.h" path="../uCOS-III/BSP/cmsis/cmsis_lib/include/stm32f4xx_rtc.h" type="1"/>

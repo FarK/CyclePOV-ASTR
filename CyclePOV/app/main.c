@@ -159,9 +159,11 @@ static  void  AppTaskStart (void *p_arg)
 
     AppTaskCreate();                                            /* Create Application tasks                             */
 
+    OSTaskChangePrio(&AppTaskStart, 6, &err);
     /* Task body, always written as an infinite loop.       */
     while(DEF_TRUE)
     {
+
     	BSP_System_LED_Toggle();
 
         OSTimeDlyHMSM(0, 0, 0, 500, OS_OPT_TIME_HMSM_STRICT, &err);
