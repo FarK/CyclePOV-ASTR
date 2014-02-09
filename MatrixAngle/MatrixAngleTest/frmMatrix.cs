@@ -46,7 +46,8 @@ namespace MatrixAngleTest
                     red = _matrix[r,l,0];
                     green = _matrix[r,l,1];
                     blue = _matrix[r,l,2];
-                    str += string.Format("{0},{1},{2}", red, green, blue);
+                    //str += string.Format("{0},{1},{2}", green, red, blue);
+                    str += string.Format("{0},{1},{2}", green, red, blue);
                     str += "},";
 
                     if (l % 5 == 0 && l != 0)
@@ -62,6 +63,22 @@ namespace MatrixAngleTest
 
             str += "\r\n};";
 
+            ////////////////////////////////////////////////////////////////
+            ////// LISTA DE BYTES 
+            ////////////////////////////////////////////////////////////////
+            str += "\r\n\r\n\r\n\r\n\r\n\r\n";
+            for (int r = 0; r < _numRadios; r++)
+            {
+                for (int l = 0; l < _leds; l++)
+                {
+                    red = _matrix[r, l, 0];
+                    green = _matrix[r, l, 1];
+                    blue = _matrix[r, l, 2];
+                    str += string.Format("{0} {1} {2} ", green, red, blue);
+                }
+            }
+            str = str.Substring(0, str.Length - 1);
+
             textBox1.Text = str;
 
         }
@@ -71,17 +88,34 @@ namespace MatrixAngleTest
             //Configure and open serial port
             if (serialPort.IsOpen) serialPort.Close();
             serialPort.PortName = (string)portsListCB.SelectedItem;
-            serialPort.BaudRate = 4800;
+            serialPort.BaudRate = 2400;
             serialPort.Open();
 
             byte[] buff = {0};
 
-            for (int i = 0; i < _matrix.GetLength(0); i++)
-                for (int j = 0; j < _matrix.GetLength(1); j++)
-                    for (int k = 0; k < _matrix.GetLength(2); k++){
+            byte[] aux = new byte[] { 6, 6, 6, (byte)_numRadios, (byte)_leds };
+            int i = 0;
+
+            //for( byte b = 0; b <= (byte)255; b++)
+            //    serialPort.Write(new byte[] { b }, 0, 1);
+
+            while (i < aux.Length)
+            {
+                serialPort.Write(new byte[] { aux[i] }, 0, 1);
+                //System.Threading.Thread.Sleep(40);
+                i++;
+            }
+            
+
+            for (i = 0; i < _numRadios; i++)
+                for (int j = 0; j < _leds; j++)
+                    for (int k = 0; k < 3; k++){
                         buff[0] = (byte)_matrix[i,j,k];
                         serialPort.Write(buff, 0, 1);
+                        //System.Threading.Thread.Sleep(40);
                     }
+
+            serialPort.Close();
         }
 
         private void updateCB(object sender, EventArgs e)

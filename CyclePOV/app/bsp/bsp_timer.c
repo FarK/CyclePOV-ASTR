@@ -23,8 +23,7 @@ void BSP_Timer_Init()
 	TIM_TimeBaseInit(TIM5, &TIMInit);
 
 	TIM_InternalClockConfig(TIM5);
-
-	BSP_Timer_Enable(DISABLE);
+	TIM_SelectOnePulseMode(TIM5, TIM_OPMode_Single);
 }
 
 void BSP_Timer_Set_Period(uint32_t period)

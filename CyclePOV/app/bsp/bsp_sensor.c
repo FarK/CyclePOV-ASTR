@@ -55,14 +55,7 @@ CPU_INT32U BSP_Sensor_Period()
 		TIM_Cmd(TIM2, DISABLE);
 		TIM_SetCounter(TIM2, 0);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
-		TIM_ITConfig(TIM2, TIM_IT_CC2, ENABLE);
 		TIM_Cmd(TIM2, ENABLE);
-
-//		if(TIM_GetFlagStatus(TIM2, TIM_FLAG_CC2OF) == SET)
-//		{
-//			// OVERCAPTURE
-//			TIM_ClearFlag(TIM2, TIM_FLAG_CC2OF);
-//		}
 	}
 
 	return time;
