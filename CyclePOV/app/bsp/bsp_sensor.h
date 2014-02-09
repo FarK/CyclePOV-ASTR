@@ -58,6 +58,7 @@
 */
 
 void		BSP_Sensor_Init					();
+CPU_INT08U	BSP_Sensor_Event				();
 CPU_INT32U	BSP_Sensor_Period				();
 
 /*

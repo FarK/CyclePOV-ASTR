@@ -57,8 +57,9 @@
 */
 
 void		BSP_Timer_Init					();
-void		BSP_Timer_Set_Period			(uint32_t period);
-void		BSP_Timer_Enable				(FunctionalState state);
+void		BSP_Timer_SetPeriod				(uint32_t period);
+void		BSP_Timer_Cmd				(FunctionalState state);
+void		BSP_Timer_ClearIT				();
 
 /*
 *********************************************************************************************************

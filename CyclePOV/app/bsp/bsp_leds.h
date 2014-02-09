@@ -34,9 +34,12 @@
 *********************************************************************************************************
 */
 
-#define NUM_IMAGES			8
-#define NUM_SPOKES			4
-#define NUM_LEDS			3
+#define NUM_ANIMATIONS 		1
+#define NUM_IMAGES 			6
+
+#define NUM_SPOKES			128
+#define NUM_LEDS			28
+#define NUM_GROUPS			2
 
 #define RGB_BITS_PER_LED	24
 #define BITS_PER_RGB_BIT	3
@@ -45,8 +48,9 @@
 #define NUM_BITS			(NUM_RGB_BITS * BITS_PER_RGB_BIT)
 #define LED_BUFFER_SIZE		((NUM_BITS / 8) + 3)
 
-//#define MIN_WAIT_TIME_US	((int)(1.2 * NUM_RGB_BITS) + 51)
-#define MIN_WAIT_TIME_US	(200 * 1000)
+#define MIN_WAIT_TIME_US	((int)(1.2 * NUM_RGB_BITS) + 51)
+
+#define PROPORTION			1.2
 
 /*
 *********************************************************************************************************
@@ -76,10 +80,18 @@
 */
 
 void		BSP_Leds_Init					();
-void 		BSP_Leds_ClearBuffer			();
-void 		BSP_Leds_SetBuffer				(CPU_INT32U num_spoke);
+
+void 		BSP_Leds_ClearBuffers			();
+
+void		BSP_Leds_NextImage				();
+void		BSP_Leds_ResetSpokes			();
+CPU_INT08U 	BSP_Leds_NextSpoke				();
+
 void 		BSP_Leds_DMAEnable				();
-void		BSP_Leds_DMADisable				();
+void		BSP_Leds_DMA1Disable			();
+void		BSP_Leds_DMA2Disable			();
+
+void		BSP_Leds_Switch					();
 
 /*
 *********************************************************************************************************

@@ -25,6 +25,7 @@
 #include <bsp_sensor.h>
 #include <bsp_timer.h>
 #include <bsp_leds.h>
+#include <bsp_button.h>
 
 /*
 *********************************************************************************************************

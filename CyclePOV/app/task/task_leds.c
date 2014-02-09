@@ -1,29 +1,37 @@
 #define   TASK_LEDS_C
 #include  <task_leds.h>
 
-void ISR_TIMER_SENSOR(void)
+void ISR_TIMER_SENSOR()
 {
 	OS_ERR err;
-	CPU_INT32U time = BSP_Sensor_Period();
-	BSP_Timer_Enable(DISABLE);
+	CPU_INT32U time;
 
-	if(time > US_TO_TICKS(MIN_WAIT_TIME_US))
+	if(BSP_Sensor_Event())
 	{
-		OSTaskQPost(&TLedsTCB, (void *)time, 0, OS_OPT_POST_FIFO, &err);
+		time = BSP_Sensor_Period();
+
+		if(time > US_TO_TICKS(MIN_WAIT_TIME_US))
+		{
+			OSTaskQPost(&TLedsTCB, (void *)time, 0, OS_OPT_POST_FIFO, &err);
+			BSP_Timer_Cmd(DISABLE);
+		}
 	}
 }
 
-void ISR_TIMER_SPOKES(void)
+void ISR_TIMER_SPOKES()
 {
 	OS_ERR err;
 
 	OSTaskQPost(&TLedsTCB, (void *)0, 0, OS_OPT_POST_FIFO, &err);
-	BSP_Timer_Enable(DISABLE);
+
+	BSP_Timer_ClearIT();
 }
 
-void ISR_DMA_FINISHED(void)
+void ISR_BUTTON()
 {
-	BSP_Leds_DMADisable();
+	BSP_Leds_Switch();
+
+	BSP_Button_ClearIT();
 }
 
 void TLeds(void *p_arg)
@@ -32,13 +40,13 @@ void TLeds(void *p_arg)
 	OS_MSG_SIZE size;
 	CPU_INT32U time;
 
-	static CPU_INT32U current_spoke = 0;
-
 	BSP_IntVectSet(BSP_INT_ID_TIM2, 	ISR_TIMER_SENSOR);
 	BSP_IntVectSet(BSP_INT_ID_TIM5, 	ISR_TIMER_SPOKES);
-	BSP_IntVectSet(BSP_INT_ID_DMA1_CH4, ISR_DMA_FINISHED);
+	BSP_IntVectSet(BSP_INT_ID_DMA1_CH5, BSP_Leds_DMA1Disable);
+	BSP_IntVectSet(BSP_INT_ID_DMA2_CH5, BSP_Leds_DMA2Disable);
+	BSP_IntVectSet(BSP_INT_ID_EXTI0,    ISR_BUTTON);
 
-	BSP_Leds_ClearBuffer();
+	BSP_Leds_ClearBuffers();
 	BSP_Leds_DMAEnable();
 
 	while(DEF_ON)
@@ -47,21 +55,20 @@ void TLeds(void *p_arg)
 
 		if(time)
 		{
-			BSP_Timer_Set_Period(time / NUM_SPOKES);
+			OSTaskQFlush(&TLedsTCB, &err);
 
-			current_spoke = 0;
+			BSP_Timer_SetPeriod(time / NUM_SPOKES);
+			BSP_Timer_Cmd(ENABLE);
+
+			BSP_Leds_ResetSpokes();
+			BSP_Leds_NextImage();
 		}
 
-		BSP_Leds_DMADisable();
+		if(!BSP_Leds_NextSpoke())
+		{
+			BSP_Timer_Cmd(DISABLE);
 
-		if(current_spoke < NUM_SPOKES)
-		{
-			BSP_Leds_SetBuffer(current_spoke++);
-			BSP_Timer_Enable(ENABLE);
-		}
-		else
-		{
-			BSP_Leds_ClearBuffer();
+			BSP_Leds_ClearBuffers();
 		}
 
 		BSP_Leds_DMAEnable();

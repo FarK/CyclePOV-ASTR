@@ -23,23 +23,25 @@ void BSP_Timer_Init()
 	TIM_TimeBaseInit(TIM5, &TIMInit);
 
 	TIM_InternalClockConfig(TIM5);
-	TIM_SelectOnePulseMode(TIM5, TIM_OPMode_Single);
 }
 
-void BSP_Timer_Set_Period(uint32_t period)
+void BSP_Timer_SetPeriod(uint32_t period)
 {
 	TIMInit.TIM_Period = period;
 	TIM_TimeBaseInit(TIM5, &TIMInit);
 }
 
-void BSP_Timer_Enable(FunctionalState state)
+void BSP_Timer_Cmd(FunctionalState state)
 {
-	TIM_ClearFlag(TIM5, TIM_FLAG_Update);
 	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
 
 	TIM_ITConfig(TIM5, TIM_IT_Update, state);
 	TIM_Cmd(TIM5, state);
 
-	TIM_ClearFlag(TIM5, TIM_FLAG_Update);
+	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
+}
+
+void BSP_Timer_ClearIT()
+{
 	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
 }
