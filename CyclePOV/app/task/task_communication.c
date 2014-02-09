@@ -3,6 +3,7 @@
 #include <bsp_usart.h>
 #include <frame.h>
 #include <SM_frame.h>
+#include <crc8.h>
 
 FrameSM frameSM;
 
@@ -60,11 +61,15 @@ void TCommunication(void *p_arg)
 		frame = (Frame*)(OSTaskQPend(0, OS_OPT_PEND_BLOCKING, &size, 0, &err));
 
 		//Process the frame
+		if((Crc8(frame, sizeof(Frame) - 1) == frame->crc) && (frame->length == 2))
+		{
+			BSP_Leds_SetMode((MODE)frame->data[0], frame->data[1]);
+		}
 
 		//Free frame memory
-		OSMemPut((OS_MEM *)&FrameMemPartition,
-				 (void *)frame,
-				 (OS_ERR *)&err);
+		OSMemPut((OS_MEM *) &FrameMemPartition,
+				 (void *  ) frame,
+				 (OS_ERR *) &err);
 
 		if(err != OS_ERR_NONE)
 		{

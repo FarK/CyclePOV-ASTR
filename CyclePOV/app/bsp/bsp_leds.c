@@ -1,12 +1,14 @@
 #define   BSP_LEDS_C
 #include  <bsp_leds.h>
-#include  <bsp_image.h>
+#include  <bsp_animation.h>
 
-CPU_INT32U counter;
-CPU_INT32U current_animation;
-CPU_INT32U current_image;
-CPU_INT32U current_spoke;
-uint8_t ledBuffer[NUM_GROUPS][LED_BUFFER_SIZE];
+CPU_INT32U	counter;
+CPU_INT32U	current_animation;
+CPU_INT32U	current_image;
+CPU_INT32U	current_spoke;
+uint8_t 	ledBuffer[NUM_GROUPS][LED_BUFFER_SIZE];
+
+MODE		current_mode = MODE_SEQUENTIAL;
 
 ////////////////////////////////////////////////////////////
 // BIT ARRAY HELPER FUNCTION
@@ -126,7 +128,15 @@ void BSP_Leds_NextImage()
 
 	if(loop >= animations[current_animation].duration)
 	{
-		current_animation = (current_animation + 1) % NUM_ANIMATIONS;
+		switch(current_mode)
+		{
+			case MODE_SEQUENTIAL:
+				current_animation = (current_animation + 1) % NUM_ANIMATIONS;
+				break;
+			case MODE_STATIC:
+
+				break;
+		}
 
 		counter = 0;
 	}
@@ -218,3 +228,18 @@ void BSP_Leds_Switch()
 	DMA2_Stream5->M0AR = dma1_m0ar;
 }
 
+void BSP_Leds_SetMode(MODE mode, CPU_INT32U animation)
+{
+	if(mode < NUM_MODES && animation < NUM_ANIMATIONS)
+	{
+		counter = 0;
+		current_mode = mode;
+
+		if(mode == MODE_STATIC)
+		{
+			current_animation = animation;
+		}
+
+		current_image = animations[current_animation].index;
+	}
+}
