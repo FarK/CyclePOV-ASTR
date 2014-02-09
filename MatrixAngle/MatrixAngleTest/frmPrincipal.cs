@@ -29,6 +29,7 @@ namespace MatrixAngleTest
         private double cy = -1;
         private bool _binarize = false;
         private bool _interpolated = true;
+        //private int _pixelsCenterIgnore = 5;
 
         public frmPrincipal()
         {
@@ -275,19 +276,21 @@ namespace MatrixAngleTest
 
             try
             {
-                float pci = percentCenterIgnore / 100f;
+                float pci = percentCenterIgnore;
                 if (cx < 0)
                 {
                     cx = img.Width / 2;
                     cy = img.Height / 2;
                 }
                 int minSize = Math.Min(img.Width, img.Height);
-                int start = (int)(pci * (float)minSize);
+                int start = (int)pci;
 
                 int ledsxradio = numLeds;
                 float grade = 0;
                 float radiooffset = (float)360 / numRadios;
                 float tiraoffset = (float)numRadios / numTiras;
+                int rot = (int)(numRadios * ((float)trRotation.Value / 100f));
+                
 
                 int radio = 0;
                 int r = 0;
@@ -301,8 +304,8 @@ namespace MatrixAngleTest
                         for (int l = 0; l < ledsxradio; l++)
                         {
                             int p = start + l * ledsOffset;
-                            double x = p * Math.Cos(DegreeToRadian(grade)) + cx;
-                            double y = p * -Math.Sin(DegreeToRadian(grade)) + cy;
+                            double x = ( p) * Math.Cos(DegreeToRadian(grade)) + cx;
+                            double y = ( p) * -Math.Sin(DegreeToRadian(grade)) + cy;
                             x = Math.Round(x);
                             y = Math.Round(y);
 
@@ -312,9 +315,9 @@ namespace MatrixAngleTest
                             GetInterpolationColor(img, x, y, out red, out green, out blue);
 
                             int index = l + (ledsxradio * i);
-                            m[radio, index, 0] = red;
-                            m[radio, index, 1] = green;
-                            m[radio, index, 2] = blue;
+                            m[(radio + numRadios - rot) % numRadios, index, 0] = red;
+                            m[(radio + numRadios - rot) % numRadios, index, 1] = green;
+                            m[(radio + numRadios - rot) % numRadios, index, 2] = blue;
                         }
                     }
 
@@ -328,10 +331,26 @@ namespace MatrixAngleTest
             return m;
         }
 
-        private static void GetInterpolationColor(Image img, double x, double y, out int red, out int green, out int blue)
+        private  void GetInterpolationColor(Image img, double x, double y, out int red, out int green, out int blue)
         {
+            if (_interpolated)
+            {
+                red = 0; green = 0; blue = 0;
+                if (x >= 0 && x  < img.Width &&
+                    y >= 0 && y < img.Height)
+                {
+                    Color c = ((Bitmap)img).GetPixel((int)x, (int)y);
+                    red = c.R;
+                    green = c.G;
+                    blue = c.B;
 
-            float[,] cm = new float[,] 
+                }
+
+                return;
+            }
+            else
+            {
+                float[,] cm = new float[,] 
                         { 
                             {0, 1, 1, 1, 0},
                             {1, 2, 4, 3, 1},
@@ -340,40 +359,37 @@ namespace MatrixAngleTest
                             {0, 1, 1, 1, 0}
                         };
 
-            float sum = 0;
-            int i = 0, j = 0;
-            for (i = 0; i < 5; i++)
-                for (j = 0; j < 5; j++)
-                    sum += cm[i, j];
+                float sum = 0;
+                int i = 0, j = 0;
+                for (i = 0; i < 5; i++)
+                    for (j = 0; j < 5; j++)
+                        sum += cm[i, j];
 
-
-            int count = 0;
-            red = 0; green = 0; blue = 0;
-            x -= 2; y -= 2;
-            i = -2; 
-            for (; i < 3; i++)
-            {
-                j = -2;
-                for (; j < 3; j++)
+                red = 0; green = 0; blue = 0;
+                x -= 2; y -= 2;
+                i = -2;
+                for (; i < 3; i++)
                 {
-                    if (x + i >= 0 && x + i < img.Width &&
-                        y + j >= 0 && y + j < img.Height)
+                    j = -2;
+                    for (; j < 3; j++)
                     {
-                        Color c = ((Bitmap)img).GetPixel((int)x + i, (int)y + j);
+                        if (x + i >= 0 && x + i < img.Width &&
+                            y + j >= 0 && y + j < img.Height)
+                        {
+                            Color c = ((Bitmap)img).GetPixel((int)x + i, (int)y + j);
 
-                        float f = ((float)cm[i+2, j+2] / sum);
-                        red += (int)((float)c.R * f);
-                        green += (int)((float)c.G * f);
-                        blue += (int)((float)c.B * f);
+                            float f = ((float)cm[i + 2, j + 2] / sum);
+                            red += (int)((float)c.R * f);
+                            green += (int)((float)c.G * f);
+                            blue += (int)((float)c.B * f);
 
+                        }
                     }
+
                 }
+    
 
             }
-            if (red == 0 && green == 0 && blue == 0)
-                red = red;
-
-
 
         }
 
@@ -387,11 +403,9 @@ namespace MatrixAngleTest
         {
             if (_matrix != null)
             {
-                float pci = (int)ignorarCentro.Value / 100f;
-                int minSize = Math.Min(_imageWidth, _imageHeight);
-                int start = (int)(pci * (float)minSize);
-
+        
                 int separacion = 5;
+                int start = (int)ignorarCentro.Value * separacion;
                 double cx = pictureBox1.Width / 2;
                 double cy = pictureBox1.Height / 2;
                 
@@ -469,18 +483,53 @@ namespace MatrixAngleTest
 
         private void matrizToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int[, ,] matrix = ReduceMatrix(_matrix);
-            frmMatrix frmM = new frmMatrix(matrix, (int)_numleds, (int)numRadios.Value);
+            List<int[, ,]> lmatrix = new List<int[, ,]>();
+            List<int> startAniIndex = new List<int>();
+            List<int> duration = new List<int>();
+            int index = 0;
+            foreach (ListViewItem lvi in listView1.SelectedItems)
+            {
+                //parse info from item Tag
+                string tag = (string)lvi.Tag;
+                _imagePath = GetPath( tag );
+                if (IsAnimationStart(tag))
+                {
+                    startAniIndex.Add(index);
+                    duration.Add(GetAnimationDuration(tag));
+                }
+
+                //get image
+                Image img = GetImage();
+
+                //get matrix from image
+                _matrix = GetMatrix(img, 1, (int)numRadios.Value,
+                                   _numleds, (int)pixelsDistance.Value, (int)this.ignorarCentro.Value);
+                
+                //convert matrix to wheel format
+                int[, ,] matrix = ReduceMatrix(_matrix);
+
+                lmatrix.Add(matrix);
+
+                index++;
+            }
+
+            //show matrix form
+            frmMatrix frmM = new frmMatrix(lmatrix, startAniIndex.ToArray(), 
+                                duration.ToArray(), (int)_numleds, (int)numRadios.Value);
             frmM.ShowDialog();
         }
 
+        /// <summary>
+        /// Convert the matrix of angles to the format of the wheel
+        /// </summary>
+        /// <param name="_matrix">Matrix of angles</param>
+        /// <returns>Formatted matrix</returns>
         private int[, ,] ReduceMatrix(int[, ,] _matrix)
         {
             int numradios = (int)numRadios.Value;
             int totalleds = (int)numLeds.Value;
             int ledsxtira = totalleds;
             int[, ,] m = new int[numradios, totalleds, 3];
-            int rsource = 0;
 
             if (_matrix != null)
             {
@@ -534,36 +583,7 @@ namespace MatrixAngleTest
                 }
 
             }
-            //for (int r = 0; r < numradios; r++)
-            //{
-            //    int numTira = 0;
-            //    int ledindex = 0;
-            //    rsource = r;
-            //    for (int l = 0; l < totalleds; l++ )
-            //    {
-            //        if (l != 0 && l % ledsxtira == 0)
-            //        {
-            //            numTira++;
-            //            rsource -= (numradios / 4) - 1;
-            //            if (rsource < 0)
-            //            {
-            //                rsource = numradios - rsource;
-            //            }
-            //            rsource %= (numradios - 1);
-
-            //        }
-
-            //        int led = l % ledsxtira;
-            //        if ((led + numTira) % 2 == 0)
-            //        {
-            //            m[r, ledindex,0] = _matrix[rsource, l,0];
-            //            m[r, ledindex, 1] = _matrix[rsource, l, 1];
-            //            m[r, ledindex++, 2] = _matrix[rsource, l, 2];
-            //        }
-                   
-            //    }
-            //}
-
+           
             return m;
         }
 
@@ -572,11 +592,6 @@ namespace MatrixAngleTest
             radio = 0;
             backbufferContext.Clear(Color.White);
             _wheelTimer.Interval = trackBar1.Value;
-        }
-
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            
         }
 
         private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
@@ -592,7 +607,7 @@ namespace MatrixAngleTest
         {
             foreach (ListViewItem item in listView1.SelectedItems)
             {
-                _imagePath = (string)item.Tag;
+                _imagePath = GetPath( (string)item.Tag );
                 ReloadImage();
                 break;
             }
@@ -602,6 +617,18 @@ namespace MatrixAngleTest
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
+                if (IsAnimationStart())
+                {
+                    comienzoDeAnimacionToolStripMenuItem.Checked = true;
+                    tsDuracionAnimacion.Visible = true;
+                    tsDuracionAnimacion.Text = GetAnimationDuration().ToString();
+                }
+                else
+                {
+                    comienzoDeAnimacionToolStripMenuItem.Checked = false;
+                    tsDuracionAnimacion.Visible = false;
+                }
+
                 cm_Eliminar.Show(Cursor.Position);
             }
         }
@@ -618,6 +645,103 @@ namespace MatrixAngleTest
             SaveImageList();
         }
 
+        private void trRotation_Scroll(object sender, EventArgs e)
+        {
+            backbufferContext.Clear(Color.White);
+            ReloadImage();
+        }
+
+        private void comienzoDeAnimacionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                string[] tag = ((string)item.Tag).Split(';');
+                if (tag.Length > 1)
+                {
+                    item.Tag = tag[0];
+                }
+                else
+                {
+                    item.Tag = tag[0] + ";True";
+                    tsDuracionAnimacion.Visible = true;
+                }
+                break;
+            }
+
+        }
+
+        private bool IsAnimationStart(string tag)
+        {
+            
+            string[] t = ((string)tag).Split(';');
+            if (t.Length > 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+             
+        }
+
+        private bool IsAnimationStart()
+        {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                return IsAnimationStart((string)item.Tag);
+            }
+
+            return false;
+        }
+
+        private string GetPath(string tag)
+        {
+            return ((string)tag).Split(';')[0];
+        }
+
+        private int GetAnimationDuration() {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                return GetAnimationDuration((string)item.Tag);
+            }
+
+            return 0;
+        }
+
+        private int GetAnimationDuration(string tag)
+        {
+            string[] split = ((string)tag).Split(';');
+
+            if (split.Length > 2)
+            {
+                return int.Parse(split[2]);
+            }
+
+            return 0;
+        }
+
+        private void tsDuracionAnimacion_Leave(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                string[] tag = ((string)item.Tag).Split(';');               
+                item.Tag = tag[0] + ";True;" + this.tsDuracionAnimacion.Text;
+                
+                break;
+            }
+        }
+
+        private void tsDuracionAnimacion_TextChanged(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listView1.SelectedItems)
+            {
+                string[] tag = ((string)item.Tag).Split(';');
+                item.Tag = tag[0] + ";True;" + this.tsDuracionAnimacion.Text;
+
+                break;
+            }
+        }
 
         
     }
