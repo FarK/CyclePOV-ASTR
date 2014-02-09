@@ -37,9 +37,9 @@
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -56,6 +56,7 @@
             this.sendBT.TabIndex = 1;
             this.sendBT.Text = "Enviar";
             this.sendBT.UseVisualStyleBackColor = true;
+            this.sendBT.Visible = false;
             this.sendBT.Click += new System.EventHandler(this.sendBT_Click);
             // 
             // portsListCB
@@ -66,6 +67,7 @@
             this.portsListCB.Name = "portsListCB";
             this.portsListCB.Size = new System.Drawing.Size(121, 21);
             this.portsListCB.TabIndex = 2;
+            this.portsListCB.Visible = false;
             this.portsListCB.DropDown += new System.EventHandler(this.updateCB);
             // 
             // serialPort
