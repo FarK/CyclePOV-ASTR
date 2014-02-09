@@ -1,0 +1,1 @@
+C:\Projects\Bicimage\app\src\MatrixAngle\MatrixAngleTest\bin\Debug\MatrixAngleTest.exe.config

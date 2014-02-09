@@ -11,14 +11,18 @@ namespace MatrixAngleTest
 {
     public partial class frmMatrix : Form
     {
-        private int[,,] _matrix;
+        private List<int[,,]> _lmatrix;
         private int _leds;
         private int _numRadios;
-        public frmMatrix(int [,,] matrix, int leds, int numRadios )
+        private int[] _startAnimationIndex;
+        private int[] _animationDuration;
+        public frmMatrix(List<int [,,]> lmatrix, int[] startAnimationIndex, int[] animationDuration, int leds, int numRadios )
         {
             InitializeComponent();
 
-            _matrix = matrix;
+            _lmatrix = lmatrix;
+            _startAnimationIndex = startAnimationIndex;
+            _animationDuration = animationDuration;
             _leds = leds;
             _numRadios = numRadios;
 
@@ -30,39 +34,90 @@ namespace MatrixAngleTest
 
         private void frmMatrix_Load(object sender, EventArgs e)
         {
-            string str = string.Format("#DEFINE NUMRADIOS {0}\r\n", _numRadios);
-            str += string.Format("#DEFINE LEDSXRADIO {0}\r\n", _leds / 2);
-            str += string.Format("#DEFINE RESOLUTIONLED {0}\r\n\r\n", _leds);
+            StringBuilder sb = new StringBuilder();
 
-            str += string.Format("uint8_t matrix[NUMRADIOS][RESOLUTIONLED][3] = {{\r\n", _numRadios, _leds);
+
+            sb.Append("#define NUM_IMAGES ");
+            sb.Append(_lmatrix.Count);
+            sb.Append("\r\n");
+            sb.Append("#define NUM_ANIMATIONS ");
+            sb.Append(_startAnimationIndex.Length);
+            sb.Append("\r\n\r\n");
+
+            //Animation start index array
+            sb.Append("const CPU_INT16U animationIndex[NUM_ANIMATIONS] {");
+            foreach (int index in _startAnimationIndex)
+            {
+                sb.Append(index.ToString());
+                sb.Append(",");
+            }
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("}");
+
+            //Animation duration array
+            sb.Append("const CPU_INT16U animationDuration[NUM_ANIMATIONS] {");
+            foreach (int duration in _animationDuration)
+            {
+                sb.Append(duration.ToString());
+                sb.Append(",");
+            }
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("}");
+
+            //Matrices
+            sb.Append(string.Format("const CPU_INT08U images[NUM_IMAGES][NUM_SPOKES][NUM_LEDS][3] = {{\r\n", _numRadios, _leds));
             int red = 0, green = 0, blue = 0;
 
-            for (int r = 0; r < _numRadios; r++)
+            foreach (int[, ,] matrix in _lmatrix)
             {
-                str += "\t{\r\n\t\t";
-                for (int l = 0; l < _leds; l++)
-                {
-                    str += "{";
-                    red = _matrix[r,l,0];
-                    green = _matrix[r,l,1];
-                    blue = _matrix[r,l,2];
-                    str += string.Format("{0},{1},{2}", red, green, blue);
-                    str += "},";
+                sb.Append("{\r\n");
 
-                    if (l % 5 == 0 && l != 0)
-                        str += "\r\n\t\t";
+                for (int r = 0; r < _numRadios; r++)
+                {
+                    sb.Append("\t{\r\n\t\t");
+                    for (int l = 0; l < _leds; l++)
+                    {
+                        sb.Append("{");
+                        red = matrix[r, l, 0];
+                        green = matrix[r, l, 1];
+                        blue = matrix[r, l, 2];
+                        sb.Append(string.Format("{0},{1},{2}", green, red, blue));
+                        sb.Append("},");
+
+                        if (l % 5 == 0 && l != 0)
+                            sb.Append("\r\n\t\t");
+                    }
+
+                    sb.Remove(sb.Length - 1, 1);
+                    sb.Append("\r\n\t},\r\n");
                 }
 
-                str = str.Substring(0,str.Length - 1);
-                str += "\r\n\t},\r\n";
+
+                sb.Remove(sb.Length - 3, 3);
+
+                sb.Append("\r\n},");
             }
 
-            
-            str = str.Substring(0, str.Length - 3);
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("};");
 
-            str += "\r\n};";
+            ////////////////////////////////////////////////////////////////
+            ////// LISTA DE BYTES 
+            ////////////////////////////////////////////////////////////////
+            //sb.Append("\r\n\r\n\r\n\r\n\r\n\r\n";
+            //for (int r = 0; r < _numRadios; r++)
+            //{
+            //    for (int l = 0; l < _leds; l++)
+            //    {
+            //        red = _matrix[r, l, 0];
+            //        green = _matrix[r, l, 1];
+            //        blue = _matrix[r, l, 2];
+            //        sb.Append(string.Format("{0} {1} {2} ", green, red, blue);
+            //    }
+            //}
+            //str = str.Substring(0, str.Length - 1);
 
-            textBox1.Text = str;
+            textBox1.Text = sb.ToString();
 
         }
 
@@ -71,17 +126,34 @@ namespace MatrixAngleTest
             //Configure and open serial port
             if (serialPort.IsOpen) serialPort.Close();
             serialPort.PortName = (string)portsListCB.SelectedItem;
-            serialPort.BaudRate = 4800;
+            serialPort.BaudRate = 2400;
             serialPort.Open();
 
             byte[] buff = {0};
 
-            for (int i = 0; i < _matrix.GetLength(0); i++)
-                for (int j = 0; j < _matrix.GetLength(1); j++)
-                    for (int k = 0; k < _matrix.GetLength(2); k++){
-                        buff[0] = (byte)_matrix[i,j,k];
+            byte[] aux = new byte[] { 6, 6, 6, (byte)_numRadios, (byte)_leds };
+            int i = 0;
+
+            //for( byte b = 0; b <= (byte)255; b++)
+            //    serialPort.Write(new byte[] { b }, 0, 1);
+
+            while (i < aux.Length)
+            {
+                serialPort.Write(new byte[] { aux[i] }, 0, 1);
+                //System.Threading.Thread.Sleep(40);
+                i++;
+            }
+            
+
+            for (i = 0; i < _numRadios; i++)
+                for (int j = 0; j < _leds; j++)
+                    for (int k = 0; k < 3; k++){
+                        buff[0] = (byte)_lmatrix[0][i,j,k];
                         serialPort.Write(buff, 0, 1);
+                        //System.Threading.Thread.Sleep(40);
                     }
+
+            serialPort.Close();
         }
 
         private void updateCB(object sender, EventArgs e)
