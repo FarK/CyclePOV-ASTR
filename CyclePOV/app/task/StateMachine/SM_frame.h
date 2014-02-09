@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <frame.h>
 
-typedef enum{
+typedef enum
+{
 	SM_WAIT_STX,
 	SM_LENGTH,
 	SM_NS_T,
@@ -13,14 +14,15 @@ typedef enum{
 	SM_CRC
 } FrameState;
 
-typedef struct{
+typedef struct
+{
 	FrameState state;
 	Frame* frame;
 	int escapedByte;
 	uint8_t dataIndex;
 } FrameSM;
 
-void initFrameSM(FrameSM* frameSM);
-int fsm_newByte(uint8_t newByte, FrameSM* frameSM);
+void 	initFrameSM		(FrameSM* frameSM);
+int 	fsm_newByte		(uint8_t newByte, FrameSM* frameSM);
 
 #endif

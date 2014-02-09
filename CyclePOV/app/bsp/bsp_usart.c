@@ -1,7 +1,8 @@
 #define   BSP_USART_C
 #include  <bsp_usart.h>
 
-void BSP_USART_Init(){
+void BSP_USART_Init()
+{
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -53,11 +54,13 @@ void BSP_USART_Init(){
 	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 }
 
-int BSP_USART_Is_Tx_ISR(){
+int BSP_USART_Is_Tx_ISR()
+{
 	return USART_GetFlagStatus(USART3, USART_FLAG_TXE);
 }
 
-int BSP_USART_Is_Rx_ISR(){
+int BSP_USART_Is_Rx_ISR()
+{
 	return USART_GetFlagStatus(USART3, USART_FLAG_RXNE);
 }
 
@@ -74,7 +77,8 @@ int BSP_USART_Is_Rx_ISR(){
 		USART_ITConfig(USART3, USART_IT_TXE, DISABLE);
 }*/
 
-uint8_t BSP_USART_Rx(){
+uint8_t BSP_USART_Rx()
+{
 	return (uint8_t)USART_ReceiveData(USART3);
 }
 

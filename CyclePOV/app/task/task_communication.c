@@ -6,24 +6,31 @@
 
 FrameSM frameSM;
 
-void ISR_USART(void){
+void ISR_USART(void)
+{
 	OS_ERR err;
 
 	/*
 	if(BSP_USART_Is_Tx_ISR())
 			BSP_USART_Tx();
 	*/
-	if(BSP_USART_Is_Rx_ISR()){
+
+	if(BSP_USART_Is_Rx_ISR())
+	{
 		//Allocate memory for frame
-		if(!frameSM.frame){
-			frameSM.frame = (Frame*) OSMemGet(&FrameMemPartition, &err);
+		if(!frameSM.frame)
+		{
+			frameSM.frame = (Frame*)OSMemGet(&FrameMemPartition, &err);
 		}
 
 		//Process byte
-		if(fsm_newByte(BSP_USART_Rx(), &frameSM)){
+		if(fsm_newByte(BSP_USART_Rx(), &frameSM))
+		{
 			//Send a message with the recognized frame
 			OSTaskQPost(&TCommunicationTCB, (void *)frameSM.frame, sizeof(Frame), OS_OPT_POST_FIFO, &err);
-			if(err != OS_ERR_NONE){
+
+			if(err != OS_ERR_NONE)
+			{
 				//TODO
 			}
 
@@ -32,7 +39,8 @@ void ISR_USART(void){
 	}
 }
 
-void TCommunication(void *p_arg){
+void TCommunication(void *p_arg)
+{
 	OS_ERR err;
 	Frame* frame;
 

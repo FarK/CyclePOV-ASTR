@@ -7,7 +7,8 @@
 #define DLE 0x10
 #define DATA_LENGTH 16	//Maximo tamaño teorico = 512
 
-typedef struct{
+typedef struct
+{
 	uint8_t length;
 	uint8_t ns;
 	uint8_t t;

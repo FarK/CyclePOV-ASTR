@@ -15,7 +15,9 @@ void AppObjCreate (void)
 				(OS_MEM_SIZE)TASK_COM_FRAME_LEN,
 				(OS_ERR *)&err
 	);
-	if(err != OS_ERR_NONE){
+
+	if(err != OS_ERR_NONE)
+	{
 		//TODO
 	}
 }

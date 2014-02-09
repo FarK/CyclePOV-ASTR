@@ -39,7 +39,7 @@
 #define USART_NDECIMALS 1e3
 
 //Usart configuration parameters
-#define USART_BAUD_RATE		4800
+#define USART_BAUD_RATE		2400
 #define USART_WORD_LENGTH	USART_WordLength_8b
 #define USART_STOP_BIT		USART_StopBits_2
 #define USART_PARITY		USART_Parity_No
