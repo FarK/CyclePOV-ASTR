@@ -153,13 +153,12 @@ static  void  AppTaskStart (void *p_arg)
     CPU_IntDisMeasMaxCurReset();
 #endif
 
-    BSP_User_Init();											/* Initialize user BSP				                    */
+    AppObjCreate();													/* Create Application kernel objects                    */
 
-    AppObjCreate();                                             /* Create Application kernel objects                    */
+    AppTaskCreate();												/* Create Application tasks                             */
 
-    AppTaskCreate();                                            /* Create Application tasks                             */
+    OSTaskChangePrio(&AppTaskStart, OS_CFG_PRIO_MAX - 1, &err);		/* Change AppTaskStart priority                         */
 
-    OSTaskChangePrio(&AppTaskStart, 6, &err);
     /* Task body, always written as an infinite loop.       */
     OSTaskChangePrio((OS_TCB*)&AppTaskStartTCB, 6, &err);
     while(DEF_TRUE)
@@ -175,7 +174,7 @@ static  void  AppTaskStart (void *p_arg)
 *********************************************************************************************************
 *                                          Dummy()
 *
-* Description : Dummy function for the default kernel object creator task creator.
+* Description : Dummy function for the default kernel object creator and task creator.
 *
 * Argument(s) : none
 *
@@ -191,24 +190,6 @@ void Dummy(void)
 {
 
 }
-
-/*
-*********************************************************************************************************
-*                                          BSP_User_Init()
-*
-* Description : Initialize user BSP.
-*
-* Argument(s) : none
-*
-* Return(s)   : none
-*
-* Caller(s)   : AppTaskStart()
-*
-* Note(s)     : none.
-*********************************************************************************************************
-*/
-
-#pragma weak BSP_User_Init = Dummy
 
 /*
 *********************************************************************************************************

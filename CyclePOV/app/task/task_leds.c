@@ -40,6 +40,11 @@ void TLeds(void *p_arg)
 	OS_MSG_SIZE size;
 	CPU_INT32U time;
 
+	BSP_Sensor_Init();
+	BSP_Timer_Init();
+	BSP_Leds_Init();
+	BSP_Button_Init();
+
 	BSP_IntVectSet(BSP_INT_ID_TIM2, 	ISR_TIMER_SENSOR);
 	BSP_IntVectSet(BSP_INT_ID_TIM5, 	ISR_TIMER_SPOKES);
 	BSP_IntVectSet(BSP_INT_ID_DMA1_CH5, BSP_Leds_DMA1Disable);

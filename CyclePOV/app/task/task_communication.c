@@ -25,7 +25,6 @@ void ISR_USART(void){
 			OSTaskQPost(&TCommunicationTCB, (void *)frameSM.frame, sizeof(Frame), OS_OPT_POST_FIFO, &err);
 			if(err != OS_ERR_NONE){
 				//TODO
-				err = err;
 			}
 
 			frameSM.frame = 0;
@@ -46,15 +45,22 @@ void TCommunication(void *p_arg){
 
 	//Wait for the next frame
 	OS_MSG_SIZE size;
-	frame = (Frame*)(OSTaskQPend(0, OS_OPT_PEND_BLOCKING, &size, 0, &err));
 
-	//Process the frame
+	while(DEF_ON)
+	{
+		//Get a frame
+		frame = (Frame*)(OSTaskQPend(0, OS_OPT_PEND_BLOCKING, &size, 0, &err));
 
-	//Free frame memory
-	OSMemPut((OS_MEM *)&FrameMemPartition,
-			 (void *)frame,
-			 (OS_ERR *)&err);
-	if(err != OS_ERR_NONE){
-		//TODO
+		//Process the frame
+
+		//Free frame memory
+		OSMemPut((OS_MEM *)&FrameMemPartition,
+				 (void *)frame,
+				 (OS_ERR *)&err);
+
+		if(err != OS_ERR_NONE)
+		{
+			//TODO
+		}
 	}
 }

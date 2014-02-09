@@ -216,13 +216,11 @@
     <File name="uCOS-III/uC-CPU/include/cpu_def.h" path="../uCOS-III/uC-CPU/include/cpu_def.h" type="1"/>
     <File name="app/bsp/bsp_button.h" path="app/bsp/bsp_button.h" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_pend_multi.c" path="../uCOS-III/uCOS-III/src/os_pend_multi.c" type="1"/>
-    <File name="app/bsp/bsp_user.h" path="app/bsp/bsp_user.h" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_boot/system_stm32f4xx.h" path="../uCOS-III/BSP/cmsis/cmsis_boot/system_stm32f4xx.h" type="1"/>
     <File name="uCOS-III/uCOS-III/include/os_cpu.h" path="../uCOS-III/uCOS-III/include/os_cpu.h" type="1"/>
     <File name="uCOS-III/uC-CPU/include/cpu.h" path="../uCOS-III/uC-CPU/include/cpu.h" type="1"/>
     <File name="app/main.c" path="app/main.c" type="1"/>
     <File name="uCOS-III/uCOS-III/src/os_task.c" path="../uCOS-III/uCOS-III/src/os_task.c" type="1"/>
-    <File name="app/bsp/bsp_user.c" path="app/bsp/bsp_user.c" type="1"/>
     <File name="uCOS-III/BSP/uCOS-III/src/bsp_os.c" path="../uCOS-III/BSP/uCOS-III/src/bsp_os.c" type="1"/>
     <File name="uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_syscfg.c" path="../uCOS-III/BSP/cmsis/cmsis_lib/src/stm32f4xx_syscfg.c" type="1"/>
     <File name="app/bsp/bsp_timer.c" path="app/bsp/bsp_timer.c" type="1"/>
