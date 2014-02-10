@@ -29,6 +29,7 @@ namespace MatrixAngleTest
         private double cy = -1;
         private bool _binarize = false;
         private bool _interpolated = true;
+        private byte[] _crcAnimacion = { 02, 00, 00, 01, 66, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00 };
         //private int _pixelsCenterIgnore = 5;
 
         public frmPrincipal()
@@ -54,6 +55,10 @@ namespace MatrixAngleTest
             _wheelTimer.Enabled = true;
 
             _numleds = (int)numLeds.Value;
+
+            //puertos
+            foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
+                cmPuerto.Items.Add(port);
 
             //inicio
             _imagePath = "C:\\Users\\David\\Pictures\\2048px-User_Jette_awesome.svg.png";
@@ -144,7 +149,7 @@ namespace MatrixAngleTest
             {
                 Bitmap img = GetImage();
 
-                Add2ImageList(img);
+                Add2ImageList(img, _imagePath);
 
                 //escribimos a ficheros la lista de imagenes
                 SaveImageList();
@@ -161,12 +166,12 @@ namespace MatrixAngleTest
             }
         }
 
-        private void Add2ImageList(Bitmap img)
+        private void Add2ImageList(Bitmap img, string tag)
         {
             imageList1.Images.Add(img);
             ListViewItem lvi = new ListViewItem();
             lvi.ImageIndex = imageList1.Images.Count - 1;
-            lvi.Tag = _imagePath;
+            lvi.Tag = tag;
             listView1.Items.Add(lvi);
         }
 
@@ -196,17 +201,27 @@ namespace MatrixAngleTest
 
         private void LoadImageList()
         {
-            StreamReader sr = new StreamReader("imagelist.txt");
-            string line = sr.ReadLine();
-
-            while (line != null)
+            if( System.IO.File.Exists( "imagelist.txt" ) )
             {
-                _imagePath = line;
-                Bitmap img = GetImage();
-                Add2ImageList(img);
+                StreamReader sr = new StreamReader("imagelist.txt");
+                string line = sr.ReadLine();
 
-                line = sr.ReadLine();
+                int count = 0;
+                while (line != null)
+                {
+                    _imagePath = GetPath(line);
+                    Bitmap img = GetImage();
+                    Add2ImageList(img, line);
+
+                    
+               
+                    line = sr.ReadLine();
+                    count++;
+                }
+
             }
+
+
         }
 
 
@@ -622,11 +637,13 @@ namespace MatrixAngleTest
                     comienzoDeAnimacionToolStripMenuItem.Checked = true;
                     tsDuracionAnimacion.Visible = true;
                     tsDuracionAnimacion.Text = GetAnimationDuration().ToString();
+                    comenzarAReproducirToolStripMenuItem.Visible = true;
                 }
                 else
                 {
                     comienzoDeAnimacionToolStripMenuItem.Checked = false;
                     tsDuracionAnimacion.Visible = false;
+                    comenzarAReproducirToolStripMenuItem.Visible = false;
                 }
 
                 cm_Eliminar.Show(Cursor.Position);
@@ -734,15 +751,103 @@ namespace MatrixAngleTest
 
         private void tsDuracionAnimacion_TextChanged(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listView1.SelectedItems)
+            
+            if (cm_Eliminar.Visible)
             {
-                string[] tag = ((string)item.Tag).Split(';');
-                item.Tag = tag[0] + ";True;" + this.tsDuracionAnimacion.Text;
+                foreach (ListViewItem item in listView1.SelectedItems)
+                {
+                    string[] tag = ((string)item.Tag).Split(';');
+                    item.Tag = tag[0] + ";True;" + this.tsDuracionAnimacion.Text;
 
-                break;
+                    break;
+                }
+
+                SaveImageList();
             }
         }
 
-        
+
+
+        private void comenzarAReproducirToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //imagen seleccionada
+            ListViewItem selectedItem = listView1.SelectedItems[0];
+
+            //determinamos el indice de la animación
+            byte count = 0; ;
+            foreach (ListViewItem item in listView1.Items)
+            {
+                if (item == selectedItem) break;
+                if (IsAnimationStart((string)item.Tag)) count++;
+                
+            }
+
+            
+            //calculamos el crc
+            _crcAnimacion[4] = count;
+            byte crc = Crc8(_crcAnimacion);
+
+            //trama
+            if (count == 2 || count == 16)
+            {
+                byte[] trama = { 2, 16, 2, 0, 1, 16, count, crc };
+
+                //enviamos
+                Send(trama);
+            }
+            else
+            {
+                byte[] trama = { 2, 16, 2, 0, 1, count, crc };
+
+                //enviamos
+                Send(trama);
+            }
+
+            
+
+        }
+
+        private void Send(byte[] bytes)
+        {
+            if (this.cmPuerto.SelectedItem == null)
+            {
+                MessageBox.Show("Debe seleccionar un puerto en el menú");
+                return;
+            }
+            if (serialPort.IsOpen) serialPort.Close();
+            serialPort.PortName = (string)this.cmPuerto.SelectedItem;
+            serialPort.BaudRate = 2400;
+            serialPort.Open();
+
+            serialPort.Write(bytes, 0, bytes.Length);
+
+            serialPort.Close();
+        }
+
+        private byte Crc8(byte[] bytes)
+        {
+            int crc = 0;
+            int i, j, k;
+            int aux = 0;
+            for (k = 0, j = bytes.Length; j > 0; j--, k++)
+            {
+                crc ^= (bytes[k] << 8);
+                for (i = 8; i > 0; i--)
+                {
+                    aux = crc & 0x8000;
+                    if (aux > 0)
+                        crc ^= (0x1070 << 3);
+                    crc <<= 1;
+                }
+            }
+
+            return (byte)(crc >> 8);
+        }
+
+        private void btnAutoAni_Click(object sender, EventArgs e)
+        {
+            //enviamos
+            Send(new byte[] {2, 16, 2 ,0, 0, 0, 171});
+        }
     }
 }

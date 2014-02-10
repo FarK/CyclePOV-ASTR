@@ -157,7 +157,7 @@ static  void  AppTaskStart (void *p_arg)
 
     AppTaskCreate();												/* Create Application tasks                             */
 
-    OSTaskChangePrio(&AppTaskStart, OS_CFG_PRIO_MAX - 1, &err);		/* Change AppTaskStart priority                         */
+    OSTaskChangePrio(&AppTaskStartTCB, OS_CFG_PRIO_MAX - 1, &err);	/* Change AppTaskStart priority                         */
 
     /* Task body, always written as an infinite loop.       */
     OSTaskChangePrio((OS_TCB*)&AppTaskStartTCB, 6, &err);

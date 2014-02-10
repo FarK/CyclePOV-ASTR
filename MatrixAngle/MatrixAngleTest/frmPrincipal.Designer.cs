@@ -50,8 +50,13 @@
             this.eliminarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comienzoDeAnimacionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDuracionAnimacion = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.comenzarAReproducirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trRotation = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
+            this.cmPuerto = new System.Windows.Forms.ToolStripComboBox();
+            this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this.btnAutoAni = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numLeds)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRadios)).BeginInit();
@@ -68,25 +73,26 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.abrirImagenToolStripMenuItem,
-            this.matrizToolStripMenuItem});
+            this.matrizToolStripMenuItem,
+            this.cmPuerto});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1064, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1064, 27);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // abrirImagenToolStripMenuItem
             // 
             this.abrirImagenToolStripMenuItem.Name = "abrirImagenToolStripMenuItem";
-            this.abrirImagenToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.abrirImagenToolStripMenuItem.Text = "Abrir imagen";
+            this.abrirImagenToolStripMenuItem.Size = new System.Drawing.Size(97, 23);
+            this.abrirImagenToolStripMenuItem.Text = "Añadir imagen";
             this.abrirImagenToolStripMenuItem.Click += new System.EventHandler(this.abrirImagenToolStripMenuItem_Click);
             // 
             // matrizToolStripMenuItem
             // 
             this.matrizToolStripMenuItem.Name = "matrizToolStripMenuItem";
-            this.matrizToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.matrizToolStripMenuItem.Text = "Matriz";
+            this.matrizToolStripMenuItem.Size = new System.Drawing.Size(96, 23);
+            this.matrizToolStripMenuItem.Text = "Generar Matriz";
             this.matrizToolStripMenuItem.Click += new System.EventHandler(this.matrizToolStripMenuItem_Click);
             // 
             // openFileDialog1
@@ -265,9 +271,11 @@
             this.cm_Eliminar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.eliminarToolStripMenuItem,
             this.comienzoDeAnimacionToolStripMenuItem,
-            this.tsDuracionAnimacion});
+            this.tsDuracionAnimacion,
+            this.toolStripMenuItem2,
+            this.comenzarAReproducirToolStripMenuItem});
             this.cm_Eliminar.Name = "cm_Eliminar";
-            this.cm_Eliminar.Size = new System.Drawing.Size(204, 95);
+            this.cm_Eliminar.Size = new System.Drawing.Size(204, 101);
             this.cm_Eliminar.Text = "Eliminar";
             // 
             // eliminarToolStripMenuItem
@@ -293,6 +301,18 @@
             this.tsDuracionAnimacion.Leave += new System.EventHandler(this.tsDuracionAnimacion_Leave);
             this.tsDuracionAnimacion.TextChanged += new System.EventHandler(this.tsDuracionAnimacion_TextChanged);
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(200, 6);
+            // 
+            // comenzarAReproducirToolStripMenuItem
+            // 
+            this.comenzarAReproducirToolStripMenuItem.Name = "comenzarAReproducirToolStripMenuItem";
+            this.comenzarAReproducirToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.comenzarAReproducirToolStripMenuItem.Text = "Comenzar a reproducir";
+            this.comenzarAReproducirToolStripMenuItem.Click += new System.EventHandler(this.comenzarAReproducirToolStripMenuItem_Click);
+            // 
             // trRotation
             // 
             this.trRotation.Location = new System.Drawing.Point(327, 300);
@@ -313,6 +333,21 @@
             this.label2.TabIndex = 18;
             this.label2.Text = "Rotacion";
             // 
+            // cmPuerto
+            // 
+            this.cmPuerto.Name = "cmPuerto";
+            this.cmPuerto.Size = new System.Drawing.Size(121, 23);
+            // 
+            // btnAutoAni
+            // 
+            this.btnAutoAni.Location = new System.Drawing.Point(919, 470);
+            this.btnAutoAni.Name = "btnAutoAni";
+            this.btnAutoAni.Size = new System.Drawing.Size(133, 23);
+            this.btnAutoAni.TabIndex = 19;
+            this.btnAutoAni.Text = "Animación automatica";
+            this.btnAutoAni.UseVisualStyleBackColor = true;
+            this.btnAutoAni.Click += new System.EventHandler(this.btnAutoAni_Click);
+            // 
             // frmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -320,6 +355,7 @@
             this.ClientSize = new System.Drawing.Size(1064, 505);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.label2);
+            this.Controls.Add(this.btnAutoAni);
             this.Controls.Add(this.trRotation);
             this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.label5);
@@ -379,6 +415,11 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem comienzoDeAnimacionToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox tsDuracionAnimacion;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem comenzarAReproducirToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox cmPuerto;
+        private System.IO.Ports.SerialPort serialPort;
+        private System.Windows.Forms.Button btnAutoAni;
     }
 }
 

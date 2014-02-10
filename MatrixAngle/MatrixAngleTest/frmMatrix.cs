@@ -44,25 +44,27 @@ namespace MatrixAngleTest
             sb.Append(_startAnimationIndex.Length);
             sb.Append("\r\n\r\n");
 
+           
             //Animation start index array
-            sb.Append("const CPU_INT16U animationIndex[NUM_ANIMATIONS] {");
-            foreach (int index in _startAnimationIndex)
+            sb.Append("const Animation animations[NUM_ANIMATIONS] = {\r\n");
+            for( int i = 0; i < _startAnimationIndex.Length; i++)
             {
+                int index = _startAnimationIndex[i];
+                int lastIndex = i < _startAnimationIndex.Length- 1 ? _startAnimationIndex[i+1] : _lmatrix.Count;
+                sb.Append("\t{.index = ");
                 sb.Append(index.ToString());
-                sb.Append(",");
+                sb.Append(", ");
+                sb.Append(".num_images =  ");
+                sb.Append( lastIndex - index );
+                sb.Append(", ");
+                sb.Append(".duration =  ");
+                sb.Append( _animationDuration[i] );
+                sb.Append("},\r\n");
+                
             }
-            sb.Remove(sb.Length - 1, 1);
-            sb.Append("}");
+            sb.Remove(sb.Length - 3, 3);
+            sb.Append("\r\n};\r\n");
 
-            //Animation duration array
-            sb.Append("const CPU_INT16U animationDuration[NUM_ANIMATIONS] {");
-            foreach (int duration in _animationDuration)
-            {
-                sb.Append(duration.ToString());
-                sb.Append(",");
-            }
-            sb.Remove(sb.Length - 1, 1);
-            sb.Append("}");
 
             //Matrices
             sb.Append(string.Format("const CPU_INT08U images[NUM_IMAGES][NUM_SPOKES][NUM_LEDS][3] = {{\r\n", _numRadios, _leds));
@@ -163,6 +165,8 @@ namespace MatrixAngleTest
             foreach (string port in System.IO.Ports.SerialPort.GetPortNames())
                 portsListCB.Items.Add(port);
         }
+
+        
 
     }
 }
