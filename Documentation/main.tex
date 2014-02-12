@@ -1,0 +1,76 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{import}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[spanish]{varioref}
+\usepackage{xparse}
+\usepackage{appendix}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	filecolor=blue,
+	urlcolor=blue,
+	pdftitle= CyclePOV,
+	pdfauthor= Manuel Caballero Sánchez - David Solís Martín - Carlos Falgueras García,
+	pdfsubject= Persist of vision on bicycle wheel,
+	pdfkeywords= POV bicycle wheel
+}
+
+\def\Title{CyclePOV}
+\def\Authors{Manuel Caballero Sánchez \\ David Solís Martín \\ Carlos Falgueras García}
+\def\Tutor{Claudio Amaya Rodríguez}
+
+%Referencia capítulos, secciones, etc; con número y título
+\newcommand{\refcont}[1]{\ref{#1}-\nameref{#1}}
+\newcommand{\reffig}[1]{Figura \ref{#1}}
+
+%Espaciado entre párrafos
+\newlength{\parseparation}
+\setlength{\parseparation}{1.5em}  %Distancia entre párrafos por defecto
+\newcommand{\parset}[1]{\setlength{\parskip}{#1}}  %Comando para setear distancia
+\newcommand{\parreset}{\setlength{\parskip}{\parseparation}}  %Comando para dejarla como estaba
+\parreset
+
+%%%%%%%%%%
+% MACROS %
+%%%%%%%%%%
+\def\uCOS{$\mu$C/OS-III}
+
+\begin{document}
+\subimport{Title/}{Title}
+
+\tableofcontents
+\newpage
+
+%Imports de las partes
+\subimport{Introduccion/}{Introduccion}
+\newpage
+\subimport{Montaje/}{Montaje}
+\newpage
+\subimport{Firmware/}{Firmware}
+\newpage
+\subimport{Software/}{Software}
+\newpage
+
+%Bibliografía
+\section{Bibliografía}
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{bibliografia.bib}
+
+%Anexos
+\newpage
+\section{Anexos}
+\subsection{Repositorio}
+Dirección del repositorio Git que contiene el Firmware del sistema, el código
+\LaTeX\ de la documentación y el código de ``MatrixAngle''. Lo único que no se
+incluye es la versión modificada de \uCOS\ por restricciones de la licencia.
+
+\textbf{Dirección del repositorio:} \url{https://github.com/FarK/CyclePOV}
+
+\end{document}

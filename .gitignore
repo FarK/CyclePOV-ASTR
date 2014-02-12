@@ -20,3 +20,12 @@ MatrixAngle/MatrixAngleTest/obj
 
 #Vim
 *.swp
+
+#LaTeX
+*.aux
+*.out
+*.log
+*.bbl
+*.blg
+*.toc
+*.latexmain
